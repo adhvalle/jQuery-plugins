@@ -1,40 +1,28 @@
 (function($){
-	$.fn.ajaxForm = function(options){
-		var settings = $.extend({}, $.fn.ajaxForm.defaults, options);
+	$.fn.hilight = function(options){
+
+		var settings = $.extend({}, $.fn.hilight.defaults, options);
 
 		return this.each(function(){
 			var $this = $(this);
-			var self = this;
 
-			$this.on('submit', function(ev){
-				ev.preventDefault();
-
-				if($this.data('basicvalidation-isvalid'))
-				{
-					var $submit = $this.find(':submit');
-					$submit.prop('disabled', true);
-
-					var data = $this.serialize();
-
-					$.post($(this).attr('action'), data)
-						.done(function(resultado){
-							console.info('success');
-							settings.onSuccess.call(self, resultado);
-						})
-						.fail(function(resultado){
-							console.info('fail');
-							settings.onFail.call(self, resultado);
-						})
-						.always(function(){
-							$submit.prop('disabled', false);
-						});
-				}
+			$this.css({
+				'color': settings.foreground,
+				'background-color': settings.background
 			});
+
+			var originalHtml = $this.html();
+			var formattedHtml = "<strong>" + originalHtml +"</strong>";
+
+			$this.html(formattedHtml);
+
+			settings.onFormatted.call(this);
 		});
 	};
 
-	$.fn.ajaxForm.defaults = {
-		onSuccess : function(){},
-		onFail : function(){}
+	$.fn.hilight.defaults = {
+		foreground : "red",
+		background : "yellow",
+		onFormatted : function(){}
 	};
 })(jQuery);
